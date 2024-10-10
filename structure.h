@@ -1,4 +1,5 @@
 #pragma once
+#include <Novice.h>
 
 struct Vector2 {
 	float x;
@@ -8,6 +9,10 @@ struct Vector2 {
 struct Grid {
 	int beside;
 	int vertical;
+};
+
+struct Map8x8 {
+	int m[8][8];
 };
 
 struct Line {

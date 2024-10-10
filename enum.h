@@ -2,7 +2,7 @@
 
 enum scene {
 	title,
-	gameselect,
+	stageselect,
 	game,
 	gameclear
 };
