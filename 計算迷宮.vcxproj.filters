@@ -112,5 +112,6 @@
       <Filter>KamataEngine\Include</Filter>
     </ClInclude>
     <ClInclude Include="structure.h" />
+    <ClInclude Include="enum.h" />
   </ItemGroup>
 </Project>
