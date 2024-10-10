@@ -1,4 +1,5 @@
 #include <Novice.h>
+#include "structure.h"
 
 const char kWindowTitle[] = "計算迷宮";
 
