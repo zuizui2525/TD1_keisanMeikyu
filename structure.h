@@ -15,6 +15,12 @@ struct Map8x8 {
 	int m[8][8];
 };
 
+struct Status {
+	int power;
+	int HP;
+	float velocity;
+};
+
 struct Line {
 	Vector2 startPos;
 	Vector2 endPos;
@@ -38,5 +44,22 @@ struct Circle {
 	FillMode shape;
 };
 
+struct Player {
+	Vector2 pos;
+	Vector2 Nextpos;
+	Vector2 radius;
+	Status status;
+	Grid now;
+	Grid next;
+};
 
-
+struct NumberBox {
+	Vector2 pos;
+	Vector2 Nextpos;
+	Vector2 radius;
+	Status status;
+	Grid now;
+	Grid next;
+	bool isAlive;
+	int number;
+};
