@@ -126,6 +126,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//初期化の処理
 		if (initializationFlag) {
 			///// リセット /////
+			//計算記号
+			calculation = add;
 			//ナンバーボックス
 			for (int i = 0; i < kNumberBoxNumber; i++) {
 				//ナンバーボックスの有無
@@ -211,20 +213,214 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				numberBox[2].number = 7;
 				break;
 			case 3:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage3(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 9;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[2][3].x,blockPos[2][3].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				numberBox[3].isAlive = true;
+				numberBox[4].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[2][2].x,blockPos[2][2].y };
+				numberBox[1].pos = { blockPos[3][3].x,blockPos[3][3].y };
+				numberBox[2].pos = { blockPos[3][4].x,blockPos[3][4].y };
+				numberBox[3].pos = { blockPos[4][4].x,blockPos[4][4].y };
+				numberBox[4].pos = { blockPos[4][2].x,blockPos[4][2].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 3;
+				numberBox[1].number = 1;
+				numberBox[2].number = 1;
+				numberBox[3].number = 3;
+				numberBox[4].number = 2;
 				break;
 			case 4:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage4(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 16;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[2][3].x,blockPos[2][3].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[3][2].x,blockPos[3][2].y };
+				numberBox[1].pos = { blockPos[3][3].x,blockPos[3][3].y };
+				numberBox[2].pos = { blockPos[3][4].x,blockPos[3][4].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 2;
+				numberBox[1].number = 3;
+				numberBox[2].number = 5;
 				break;
 			case 5:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage5(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 13;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[5][4].x,blockPos[5][4].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				numberBox[3].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[2][2].x,blockPos[2][2].y };
+				numberBox[1].pos = { blockPos[3][3].x,blockPos[3][3].y };
+				numberBox[2].pos = { blockPos[4][2].x,blockPos[4][2].y };
+				numberBox[3].pos = { blockPos[4][4].x,blockPos[4][4].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 3;
+				numberBox[1].number = 2;
+				numberBox[2].number = 3;
+				numberBox[3].number = 4;
 				break;
 			case 6:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage6(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 12;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[4][4].x,blockPos[4][4].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				numberBox[3].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[3][4].x,blockPos[3][4].y };
+				numberBox[1].pos = { blockPos[5][4].x,blockPos[5][4].y };
+				numberBox[2].pos = { blockPos[7][3].x,blockPos[7][3].y };
+				numberBox[3].pos = { blockPos[1][5].x,blockPos[1][5].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 2;
+				numberBox[1].number = 1;
+				numberBox[2].number = 5;
+				numberBox[3].number = 4;
 				break;
 			case 7:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage7(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 16;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[2][4].x,blockPos[2][4].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[3][3].x,blockPos[3][3].y };
+				numberBox[1].pos = { blockPos[4][5].x,blockPos[4][5].y };
+				numberBox[2].pos = { blockPos[5][2].x,blockPos[5][2].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 3;
+				numberBox[1].number = 7;
+				numberBox[2].number = 3;
 				break;
 			case 8:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage8(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 13;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[3][5].x,blockPos[3][5].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				numberBox[3].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[3][4].x,blockPos[3][4].y };
+				numberBox[1].pos = { blockPos[3][6].x,blockPos[3][6].y };
+				numberBox[2].pos = { blockPos[4][3].x,blockPos[4][3].y };
+				numberBox[3].pos = { blockPos[4][5].x,blockPos[4][5].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 3;
+				numberBox[1].number = 7;
+				numberBox[2].number = 2;
+				numberBox[3].number = 4;
 				break;
 			case 9:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage9(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 9;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[2][1].x,blockPos[2][1].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				numberBox[3].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[3][2].x,blockPos[3][2].y };
+				numberBox[1].pos = { blockPos[4][3].x,blockPos[4][3].y };
+				numberBox[2].pos = { blockPos[4][4].x,blockPos[4][4].y };
+				numberBox[3].pos = { blockPos[2][5].x,blockPos[2][5].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 2;
+				numberBox[1].number = 1;
+				numberBox[2].number = 4;
+				numberBox[3].number = 3;
 				break;
 			case 10:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage10(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 11;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[6][4].x,blockPos[6][4].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[5][3].x,blockPos[5][3].y };
+				numberBox[1].pos = { blockPos[5][4].x,blockPos[5][4].y };
+				numberBox[2].pos = { blockPos[5][5].x,blockPos[5][5].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 2;
+				numberBox[1].number = 4;
+				numberBox[2].number = 7;
 				break;
 			}
 
@@ -299,6 +495,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//ステージのリセット
 			if (keys[DIK_R] && !preKeys[DIK_R]) {
 				initializationFlag = true;
+			}
+
+			//ステージセレクトに戻る
+			if (keys[DIK_Q] && !preKeys[DIK_Q]) {
+				scene = stageSelect;
 			}
 
 			///// playerの移動キー /////
@@ -520,10 +721,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}*/
 			Novice::ScreenPrintf(10, 80, "calculation = %s", calculation ? "multiply" : "add");
 			Novice::ScreenPrintf(10, 100, "targetNumber = [ %d ]", targetNumber);
-			Novice::ScreenPrintf(10, 140, "[ Reset ] : press to [R]");
+			Novice::ScreenPrintf(10, 140, "[        Reset        ] : press to [R]");
+			Novice::ScreenPrintf(10, 160, "[ ReturnToStageSelect ] : press to [Q]");
 
 			///// ↑↑更新処理↑↑ /////
 			///// ↓↓描画処理↓↓ /////
+
+			//背景(計算記号で変わる)
+			if (calculation == add) {
+				Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x94b8b1FF, kFillModeSolid);
+			} else {
+				Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xc79f9fFF, kFillModeSolid);
+			}
 
 			//blocksの表示
 			for (int x = 0; x < 9; x++) {
