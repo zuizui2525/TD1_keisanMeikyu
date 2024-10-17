@@ -2,6 +2,7 @@
 #include "enum.h"
 #include "structure.h"
 #include "map.h"
+#include <corecrt_math.h>
 
 const char kWindowTitle[] = "計算迷宮";
 
@@ -25,7 +26,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//画面幅
 	//横
 	float screenBeside = 280.0f;
-	
+
 	//画面切り替え
 	int scene = game;
 
@@ -64,21 +65,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	NumberBox numberBox[20];
 	for (int i = 0; i < 20; i++) {
 		numberBox[i].radius = { numberBoxSize / 2,numberBoxSize / 2 };
-		numberBox[i].pos = { blockPos[2][2].x,blockPos[2][2].y };
+		numberBox[i].pos = { 0.0f,0.0f };
 		numberBox[i].Nextpos = { 0.0f,0.0f };
 		numberBox[i].status.velocity = numberBoxSize;
 		numberBox[i].now = { 0,0 };
 		numberBox[i].next = { 0,0 };
-		numberBox[i].isAlive = false;
+		numberBox[i].isAlive = true;
 		numberBox[i].number = 0;
 	}
 
+	//長さ
+	float a[2] = { 0 };
+	float b[2] = { 0 };
+	float distance[2] = { 0 };
+
 	numberBox[0].pos = { blockPos[2][2].x,blockPos[2][2].y };
 	numberBox[1].pos = { blockPos[5][5].x,blockPos[5][5].y };
+	numberBox[2].pos = { blockPos[5][6].x,blockPos[5][6].y };
 
 	// キー入力結果を受け取る箱
-	char keys[256] = {0};
-	char preKeys[256] = {0};
+	char keys[256] = { 0 };
+	char preKeys[256] = { 0 };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -91,242 +98,245 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		///// ↓↓処理↓↓ /////
 		switch (scene) {
-			case title:
-				///// ↓↓更新処理↓↓ /////
+		case title:
+			///// ↓↓更新処理↓↓ /////
 
-				///// ↑↑更新処理↑↑ /////
-				///// ↓↓描画処理↓↓ /////
+			///// ↑↑更新処理↑↑ /////
+			///// ↓↓描画処理↓↓ /////
 
-				///// ↑↑描画処理↑↑ /////
-				break;
-			case stageselect:
-				///// ↓↓更新処理↓↓ /////
+			///// ↑↑描画処理↑↑ /////
+			break;
+		case stageselect:
+			///// ↓↓更新処理↓↓ /////
 
-				///// ↑↑更新処理↑↑ /////
-				///// ↓↓描画処理↓↓ /////
+			///// ↑↑更新処理↑↑ /////
+			///// ↓↓描画処理↓↓ /////
 
-				///// ↑↑描画処理↑↑ /////
-				break;
-			case game:
-				///// ↓↓更新処理↓↓ /////
-				
-				///// playerの場所決め /////
+			///// ↑↑描画処理↑↑ /////
+			break;
+		case game:
+			///// ↓↓更新処理↓↓ /////
+
+			///// playerの移動キー /////
+			if (keys[DIK_W] && !preKeys[DIK_W] && !keys[DIK_S]) {
+				//仮のposに代入 <player.Nextpos>
+				player.Nextpos.x = player.pos.x;
+				player.Nextpos.y = player.pos.y - player.status.velocity;
+
+				//場所決め <player.now>
 				player.now.beside = int(player.pos.x / playerSize);
 				player.now.vertical = int(player.pos.y / playerSize);
 
-				//場所決め <numberBox.now>
+				//場所決め <player.next>
+				player.next.beside = int(player.Nextpos.x / playerSize);
+				player.next.vertical = int(player.Nextpos.y / playerSize);
+
 				for (int i = 0; i < 20; i++) {
+					//仮のposに代入 <numberBox.Nextpos>
+					numberBox[i].Nextpos.x = numberBox[i].pos.x;
+					numberBox[i].Nextpos.y = numberBox[i].pos.y - numberBox[i].status.velocity;
+
+					//場所決め <numberBox.now>
 					numberBox[i].now.beside = int(numberBox[i].pos.x / numberBoxSize);
 					numberBox[i].now.vertical = int(numberBox[i].pos.y / numberBoxSize);
+
+					//場所決め <numberBox.next>
+					numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
+					numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
 				}
 
-				///// playerの移動キー /////
-				if (keys[DIK_W] && !preKeys[DIK_W] && !keys[DIK_S]) {
-					//仮のposに代入 <player.Nextpos>
-					player.Nextpos.x = player.pos.x;
-					player.Nextpos.y = player.pos.y - player.status.velocity;
+				//playerの移動
+				if (map[player.next.vertical][player.next.beside] == 0) {
+					player.pos.y -= player.status.velocity;
+				}
 
-					//場所決め <player.next>
-					player.next.beside = int(player.Nextpos.x / playerSize);
-					player.next.vertical = int(player.Nextpos.y / playerSize);
-
-					//当たり判定
-					for (int i = 0; i < 20; i++) {
-						if (player.next.vertical == numberBox[i].now.vertical&& player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y - numberBox[i].status.velocity;
-
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-
+				//当たり判定
+				for (int i = 0; i < 20; i++) {
+					if (numberBox[i].isAlive) {
+						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
 							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
 								numberBox[i].pos.y -= numberBox[i].status.velocity;
+							} else {
+								player.pos.y += player.status.velocity;
 							}
 						}
 					}
+				}
 
-					for (int i = 0; i < 20; i++) {
+			} else if (keys[DIK_S] && !preKeys[DIK_S] && !keys[DIK_W]) {
+				//仮のposに代入 <player.Nextpos>
+				player.Nextpos.x = player.pos.x;
+				player.Nextpos.y = player.pos.y + player.status.velocity;
+
+				//場所決め <player.now>
+				player.now.beside = int(player.pos.x / playerSize);
+				player.now.vertical = int(player.pos.y / playerSize);
+
+				//場所決め <player.next>
+				player.next.beside = int(player.Nextpos.x / playerSize);
+				player.next.vertical = int(player.Nextpos.y / playerSize);
+
+				for (int i = 0; i < 20; i++) {
+					//仮のposに代入 <numberBox.Nextpos>
+					numberBox[i].Nextpos.x = numberBox[i].pos.x;
+					numberBox[i].Nextpos.y = numberBox[i].pos.y + numberBox[i].status.velocity;
+
+					//場所決め <numberBox.now>
+					numberBox[i].now.beside = int(numberBox[i].pos.x / numberBoxSize);
+					numberBox[i].now.vertical = int(numberBox[i].pos.y / numberBoxSize);
+
+					//場所決め <numberBox.next>
+					numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
+					numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
+				}
+
+				//playerの移動
+				if (map[player.next.vertical][player.next.beside] == 0) {
+					player.pos.y += player.status.velocity;
+				}
+
+				//当たり判定
+				for (int i = 0; i < 20; i++) {
+					if (numberBox[i].isAlive) {
 						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y - numberBox[i].status.velocity;
-
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-							
-							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
-								player.pos.y -= player.status.velocity;
-								break;
-							}
-						} else if (map[player.next.vertical][player.next.beside] == 0) {
-							player.pos.y -= player.status.velocity;
-							break;
-						}
-					}
-
-				} else if (keys[DIK_S] && !preKeys[DIK_S] && !keys[DIK_W]) {
-					//仮のposに代入 <player.Nextpos>
-					player.Nextpos.x = player.pos.x;
-					player.Nextpos.y = player.pos.y + player.status.velocity;
-
-					//場所決め <player.next>
-					player.next.beside = int(player.Nextpos.x / playerSize);
-					player.next.vertical = int(player.Nextpos.y / playerSize);
-
-					//当たり判定
-					for (int i = 0; i < 20; i++) {
-						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y + numberBox[i].status.velocity;
-
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-
 							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
 								numberBox[i].pos.y += numberBox[i].status.velocity;
+							} else {
+								player.pos.y -= player.status.velocity;
 							}
 						}
 					}
+				}
 
-					for (int i = 0; i < 20; i++) {
+			} else if (keys[DIK_A] && !preKeys[DIK_A] && !keys[DIK_D]) {
+				//仮のposに代入 <player.Nextpos>
+				player.Nextpos.x = player.pos.x - player.status.velocity;
+				player.Nextpos.y = player.pos.y;
+
+				//場所決め <player.now>
+				player.now.beside = int(player.pos.x / playerSize);
+				player.now.vertical = int(player.pos.y / playerSize);
+
+				//場所決め <player.next>
+				player.next.beside = int(player.Nextpos.x / playerSize);
+				player.next.vertical = int(player.Nextpos.y / playerSize);
+
+				for (int i = 0; i < 20; i++) {
+					//仮のposに代入 <numberBox.Nextpos>
+					numberBox[i].Nextpos.x = numberBox[i].pos.x - numberBox[i].status.velocity;
+					numberBox[i].Nextpos.y = numberBox[i].pos.y;
+
+					//場所決め <numberBox.now>
+					numberBox[i].now.beside = int(numberBox[i].pos.x / numberBoxSize);
+					numberBox[i].now.vertical = int(numberBox[i].pos.y / numberBoxSize);
+
+					//場所決め <numberBox.next>
+					numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
+					numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
+				}
+
+				//playerの移動
+				if (map[player.next.vertical][player.next.beside] == 0) {
+					player.pos.x -= player.status.velocity;
+				}
+
+				//当たり判定
+				for (int i = 0; i < 20; i++) {
+					if (numberBox[i].isAlive) {
 						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y - numberBox[i].status.velocity;
-
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-							
-							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
-								player.pos.y += player.status.velocity;
-								break;
-							}
-						} else if (map[player.next.vertical][player.next.beside] == 0) {
-							player.pos.y += player.status.velocity;
-							break;
-						}
-					}
-
-				} else if (keys[DIK_A] && !preKeys[DIK_A] && !keys[DIK_D]) {
-					//仮のposに代入 <player.Nextpos>
-					player.Nextpos.x = player.pos.x - player.status.velocity;
-					player.Nextpos.y = player.pos.y;
-
-					//場所決め <player.next>
-					player.next.beside = int(player.Nextpos.x / playerSize);
-					player.next.vertical = int(player.Nextpos.y / playerSize);
-
-					//当たり判定
-					for (int i = 0; i < 20; i++) {
-						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x - numberBox[i].status.velocity;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y;
-
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-
 							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
 								numberBox[i].pos.x -= numberBox[i].status.velocity;
-								break;
+							} else {
+								player.pos.x += player.status.velocity;
 							}
 						}
 					}
+				}
 
-					for (int i = 0; i < 20; i++) {
+			} else if (keys[DIK_D] && !preKeys[DIK_D] && !keys[DIK_A]) {
+				//仮のposに代入 <player.Nextpos>
+				player.Nextpos.x = player.pos.x + player.status.velocity;
+				player.Nextpos.y = player.pos.y;
+
+				//場所決め <player.now>
+				player.now.beside = int(player.pos.x / playerSize);
+				player.now.vertical = int(player.pos.y / playerSize);
+
+				//場所決め <player.next>
+				player.next.beside = int(player.Nextpos.x / playerSize);
+				player.next.vertical = int(player.Nextpos.y / playerSize);
+
+				for (int i = 0; i < 20; i++) {
+					//仮のposに代入 <numberBox.Nextpos>
+					numberBox[i].Nextpos.x = numberBox[i].pos.x + numberBox[i].status.velocity;
+					numberBox[i].Nextpos.y = numberBox[i].pos.y;
+
+					//場所決め <numberBox.now>
+					numberBox[i].now.beside = int(numberBox[i].pos.x / numberBoxSize);
+					numberBox[i].now.vertical = int(numberBox[i].pos.y / numberBoxSize);
+
+					//場所決め <numberBox.next>
+					numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
+					numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
+				}
+
+				//playerの移動
+				if (map[player.next.vertical][player.next.beside] == 0) {
+					player.pos.x += player.status.velocity;
+				}
+
+				//当たり判定
+				for (int i = 0; i < 20; i++) {
+					if (numberBox[i].isAlive) {
 						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y - numberBox[i].status.velocity;
-
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-							
-							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
-								player.pos.x -= player.status.velocity;
-								break;
-							}
-						} else if (map[player.next.vertical][player.next.beside] == 0) {
-							player.pos.x -= player.status.velocity;
-							break;
-						}
-					}
-
-				} else if (keys[DIK_D] && !preKeys[DIK_D] && !keys[DIK_A]) {
-					//仮のposに代入 <player.Nextpos>
-					player.Nextpos.x = player.pos.x + player.status.velocity;
-					player.Nextpos.y = player.pos.y;
-
-					//場所決め <player.next>
-					player.next.beside = int(player.Nextpos.x / playerSize);
-					player.next.vertical = int(player.Nextpos.y / playerSize);
-
-					//当たり判定
-					for (int i = 0; i < 20; i++) {
-						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x + numberBox[i].status.velocity;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y;
-
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-
 							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
 								numberBox[i].pos.x += numberBox[i].status.velocity;
-								break;
+							} else {
+								player.pos.x -= player.status.velocity;
 							}
 						}
 					}
+				}
 
-					for (int i = 0; i < 20; i++) {
-						if (player.next.vertical == numberBox[i].now.vertical && player.next.beside == numberBox[i].now.beside) {
-							//仮のposに代入 <numberBox.Nextpos>
-							numberBox[i].Nextpos.x = numberBox[i].pos.x;
-							numberBox[i].Nextpos.y = numberBox[i].pos.y - numberBox[i].status.velocity;
+			}
 
-							//場所決め <numberBox.next>
-							numberBox[i].next.beside = int(numberBox[i].Nextpos.x / numberBoxSize);
-							numberBox[i].next.vertical = int(numberBox[i].Nextpos.y / numberBoxSize);
-							
-							if (map[numberBox[i].next.vertical][numberBox[i].next.beside] == 0) {
-								player.pos.x += player.status.velocity;
-								break;
-							}
-						} else if (map[player.next.vertical][player.next.beside] == 0) {
-							player.pos.x += player.status.velocity;
-							break;
+			for (int i = 0; i < 20; i++) {
+				for (int j = 0; j < 20; j++) {
+					if (numberBox[i].isAlive && numberBox[j].isAlive && i != j) {
+						a[0] = numberBox[i].pos.x - numberBox[j].pos.x;
+						b[0] = numberBox[i].pos.y - numberBox[j].pos.y;
+						distance[0] = sqrtf(a[0] * a[0] + b[0] * b[0]);
+
+						if (distance[0] < numberBox[i].radius.x + numberBox[j].radius.x) {
+							numberBox[i].isAlive = false;
 						}
 					}
-
 				}
-				
-				///// ↑↑更新処理↑↑ /////
-				///// ↓↓描画処理↓↓ /////
+			}
 
-				//blocksの表示
-				for (int x = 0; x < 9; x++) {
-					for (int y = 0; y < 9; y++) {
-						Novice::DrawQuad(
-							int(blockPos[y][x].x - blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y - blockRadius[y][x].y),
-							int(blockPos[y][x].x + blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y - blockRadius[y][x].y),
-							int(blockPos[y][x].x - blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y + blockRadius[y][x].y),
-							int(blockPos[y][x].x + blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y + blockRadius[y][x].y),
-							map[y][x] * int(blockSize), 0, int(blockSize), int(blockSize), blocks_image, WHITE
-						);
-					}
+			for (int i = 0; i < 20; i++) {
+				Novice::ScreenPrintf(10, i * 20, "flag[%d] = [%s]", i, numberBox[i].isAlive ? "true" : "false");
+			}
+
+			///// ↑↑更新処理↑↑ /////
+			///// ↓↓描画処理↓↓ /////
+
+			//blocksの表示
+			for (int x = 0; x < 9; x++) {
+				for (int y = 0; y < 9; y++) {
+					Novice::DrawQuad(
+						int(blockPos[y][x].x - blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y - blockRadius[y][x].y),
+						int(blockPos[y][x].x + blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y - blockRadius[y][x].y),
+						int(blockPos[y][x].x - blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y + blockRadius[y][x].y),
+						int(blockPos[y][x].x + blockRadius[y][x].x + screenBeside), int(blockPos[y][x].y + blockRadius[y][x].y),
+						map[y][x] * int(blockSize), 0, int(blockSize), int(blockSize), blocks_image, WHITE
+					);
 				}
+			}
 
-				//NumberBoxの表示
-				for (int i = 0; i < 20; i++) {
+			//NumberBoxの表示
+			for (int i = 0; i < 20; i++) {
+				if (numberBox[i].isAlive) {
 					Novice::DrawQuad(
 						int(numberBox[i].pos.x - numberBox[i].radius.x + screenBeside), int(numberBox[i].pos.y - numberBox[i].radius.y),
 						int(numberBox[i].pos.x + numberBox[i].radius.x + screenBeside), int(numberBox[i].pos.y - numberBox[i].radius.y),
@@ -335,20 +345,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						numberBox[i].number * int(numberBoxSize), 0, int(numberBoxSize), int(numberBoxSize), numberBoxs_image, WHITE
 					);
 				}
-				
-				//playerの表示
-				Novice::DrawSprite(int(player.pos.x - player.radius.x + screenBeside), int(player.pos.y - player.radius.y), player_image, 1, 1, 0.0f, WHITE);
+			}
 
-				///// ↑↑描画処理↑↑ /////
-				break;
-			case gameclear:
-				///// ↓↓更新処理↓↓ /////
+			//playerの表示
+			Novice::DrawSprite(int(player.pos.x - player.radius.x + screenBeside), int(player.pos.y - player.radius.y), player_image, 1, 1, 0.0f, WHITE);
 
-				///// ↑↑更新処理↑↑ /////
-				///// ↓↓描画処理↓↓ /////
+			///// ↑↑描画処理↑↑ /////
+			break;
+		case gameclear:
+			///// ↓↓更新処理↓↓ /////
 
-				///// ↑↑描画処理↑↑ /////
-				break;
+			///// ↑↑更新処理↑↑ /////
+			///// ↓↓描画処理↓↓ /////
+
+			///// ↑↑描画処理↑↑ /////
+			break;
 		}
 
 		///// ↑↑処理↑↑ /////
