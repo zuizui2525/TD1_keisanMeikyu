@@ -719,12 +719,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/*for (int i = 0; i < kNumberBoxNumber; i++) {
 				Novice::ScreenPrintf(10, 20 * i + 100, "numberBox[%d] = %d ,flag = [%s]", i, numberBox[i].number, numberBox[i].isAlive ? "true" : "false");
 			}*/
-			Novice::ScreenPrintf(10, 80, "calculation = %s", calculation ? "multiply" : "add");
-			Novice::ScreenPrintf(10, 100, "targetNumber = [ %d ]", targetNumber);
-			Novice::ScreenPrintf(10, 140, "[      movePlayer     ] : press to [W][A][S][D]");
-			Novice::ScreenPrintf(10, 160, "[ ChangeToCalculation ] : press to [SPACE]");
-			Novice::ScreenPrintf(10, 200, "[        Reset        ] : press to [R]");
-			Novice::ScreenPrintf(10, 220, "[ ReturnToStageSelect ] : press to [Q]");
+			Novice::ScreenPrintf(60, 10, "calculation = [ %s ]", calculation ? "multiply" : "add");
+			Novice::ScreenPrintf(60, 30, "targetNumber = [ %d ]", targetNumber);
+			Novice::ScreenPrintf(350, 10, "[      movePlayer     ] : press to [W][A][S][D]");
+			Novice::ScreenPrintf(350, 30, "[ ChangeToCalculation ] : press to [SPACE]");
+			Novice::ScreenPrintf(860, 10, "[        Reset        ] : press to [R]");
+			Novice::ScreenPrintf(860, 30, "[ ReturnToStageSelect ] : press to [Q]");
 
 			///// ↑↑更新処理↑↑ /////
 			///// ↓↓描画処理↓↓ /////
