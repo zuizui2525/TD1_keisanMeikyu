@@ -64,14 +64,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	float playerSize = 80.0f;
 	Player player;
 	player.radius = { playerSize / 2,playerSize / 2 };
-	player.pos = { blockPos[1][3].x,blockPos[1][3].y };
+	player.pos = { 0.0f,0.0f };
 	player.Nextpos = { 0.0f,0.0f };
 	player.status.velocity = playerSize;
 	player.now = { 0,0 };
 	player.next = { 0,0 };
 
 	//NumberBox
-	int const kNumberBoxNumber = 10;
+	int const kNumberBoxNumber = 10;//ナンバーボックスの数
 	float numberBoxSize = 80.0f;
 	NumberBox numberBox[kNumberBoxNumber];
 	for (int i = 0; i < kNumberBoxNumber; i++) {
@@ -140,7 +140,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			case -1:
 				///// 初期化の見本 /////
 				//マップのロード
-				int map[9][9];
 				for (int x = 0; x < 9; x++) {
 					for (int y = 0; y < 9; y++) {
 						map[y][x] = stage0(y, x);
@@ -164,8 +163,52 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				numberBox[2].number = 0;
 				break;
 			case 1:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage1(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 5;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[1][3].x,blockPos[1][3].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[1][4].x,blockPos[1][4].y };
+				numberBox[1].pos = { blockPos[2][3].x,blockPos[2][3].y };
+				numberBox[2].pos = { blockPos[4][4].x,blockPos[4][4].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 2;
+				numberBox[1].number = 4;
+				numberBox[2].number = 3;
 				break;
 			case 2:
+				//マップのロード
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < 9; y++) {
+						map[y][x] = stage2(y, x);
+					}
+				}
+				//目的の数字
+				targetNumber = 15;
+				//プレイヤーのスポーン位置
+				player.pos = { blockPos[4][6].x,blockPos[4][6].y };
+				//ナンバーボックスの有無
+				numberBox[0].isAlive = true;
+				numberBox[1].isAlive = true;
+				numberBox[2].isAlive = true;
+				//ナンバーボックスのスポーン位置
+				numberBox[0].pos = { blockPos[3][2].x,blockPos[3][2].y };
+				numberBox[1].pos = { blockPos[4][4].x,blockPos[4][4].y };
+				numberBox[2].pos = { blockPos[5][3].x,blockPos[5][3].y };
+				//ナンバーボックスの保有数字
+				numberBox[0].number = 5;
+				numberBox[1].number = 3;
+				numberBox[2].number = 7;
 				break;
 			case 3:
 				break;
@@ -184,6 +227,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			case 10:
 				break;
 			}
+
+			//初期化フラグを閉じる
+			initializationFlag = false;
 		}
 		
 		switch (scene) {
@@ -209,6 +255,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//ゲームへ
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+				//初期化フラグ
+				initializationFlag = true;
+
 				scene = game;
 			}
 
@@ -245,6 +294,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				} else if (calculation == multiply) {
 					calculation = add;
 				}
+			}
+
+			//ステージのリセット
+			if (keys[DIK_R] && !preKeys[DIK_R]) {
+				initializationFlag = true;
 			}
 
 			///// playerの移動キー /////
@@ -461,10 +515,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			//ScreenPrintf
-			for (int i = 0; i < kNumberBoxNumber; i++) {
+			/*for (int i = 0; i < kNumberBoxNumber; i++) {
 				Novice::ScreenPrintf(10, 20 * i + 100, "numberBox[%d] = %d ,flag = [%s]", i, numberBox[i].number, numberBox[i].isAlive ? "true" : "false");
-			}
+			}*/
 			Novice::ScreenPrintf(10, 80, "calculation = %s", calculation ? "multiply" : "add");
+			Novice::ScreenPrintf(10, 100, "targetNumber = [ %d ]", targetNumber);
+			Novice::ScreenPrintf(10, 140, "[ Reset ] : press to [R]");
 
 			///// ↑↑更新処理↑↑ /////
 			///// ↓↓描画処理↓↓ /////
@@ -502,10 +558,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 		case gameClear:
 			///// ↓↓更新処理↓↓ /////
-
+			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+				scene = stageSelect;
+			}
 			///// ↑↑更新処理↑↑ /////
 			///// ↓↓描画処理↓↓ /////
-
+			Novice::ScreenPrintf(580, 360, "STAGE %d  CLEAR!", stageNum);
+			Novice::ScreenPrintf(550, 400, "Push SPACE to StageSelect...");
 			///// ↑↑描画処理↑↑ /////
 			break;
 		}
