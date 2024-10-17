@@ -28,7 +28,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	float screenBeside = 280.0f;
 
 	//画面切り替え
-	int scene = stageSelect;
+	int scene = title;
 
 	//計算記号の切り替え
 	int calculation = add;
@@ -431,9 +431,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		switch (scene) {
 		case title:
 			///// ↓↓更新処理↓↓ /////
-
+			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+				scene = stageSelect;
+			}
 			///// ↑↑更新処理↑↑ /////
 			///// ↓↓描画処理↓↓ /////
+
+			Novice::ScreenPrintf(550, 300, "      KEISAN MEIKYU      ");
+			Novice::ScreenPrintf(550, 350, "Push Space to stageSelect");
 
 			///// ↑↑描画処理↑↑ /////
 			break;
