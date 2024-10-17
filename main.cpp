@@ -721,8 +721,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}*/
 			Novice::ScreenPrintf(10, 80, "calculation = %s", calculation ? "multiply" : "add");
 			Novice::ScreenPrintf(10, 100, "targetNumber = [ %d ]", targetNumber);
-			Novice::ScreenPrintf(10, 140, "[        Reset        ] : press to [R]");
-			Novice::ScreenPrintf(10, 160, "[ ReturnToStageSelect ] : press to [Q]");
+			Novice::ScreenPrintf(10, 140, "[      movePlayer     ] : press to [W][A][S][D]");
+			Novice::ScreenPrintf(10, 160, "[ ChangeToCalculation ] : press to [SPACE]");
+			Novice::ScreenPrintf(10, 200, "[        Reset        ] : press to [R]");
+			Novice::ScreenPrintf(10, 220, "[ ReturnToStageSelect ] : press to [Q]");
 
 			///// ↑↑更新処理↑↑ /////
 			///// ↓↓描画処理↓↓ /////
