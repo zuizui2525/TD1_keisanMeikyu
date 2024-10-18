@@ -69,9 +69,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	player.status.velocity = playerSize;
 	player.now = { 0,0 };
 	player.next = { 0,0 };
+	player.isAlive = true;
 
 	//NumberBox
-	int const kNumberBoxNumber = 10;//ナンバーボックスの数
+	int const kNumberBoxNumber = 10;//ブロックの数
 	float numberBoxSize = 80.0f;
 	NumberBox numberBox[kNumberBoxNumber];
 	for (int i = 0; i < kNumberBoxNumber; i++) {
@@ -85,29 +86,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		numberBox[i].number = 0;
 	}
 
+	//EnemyBox
+	int const kEnemyBoxNumber = 5;//お邪魔ブロックの数
+	float enemyBoxSize = 80.0f;
+	NumberBox enemyBox[kEnemyBoxNumber];
+	for (int i = 0; i < kEnemyBoxNumber; i++) {
+		enemyBox[i].radius = { enemyBoxSize / 2,enemyBoxSize / 2 };
+		enemyBox[i].pos = { 0.0f,0.0f };
+		enemyBox[i].Nextpos = { 0.0f,0.0f };
+		enemyBox[i].status.velocity = enemyBoxSize;
+		enemyBox[i].now = { 0,0 };
+		enemyBox[i].next = { 0,0 };
+		enemyBox[i].isAlive = false;
+		enemyBox[i].number = 0;
+	}
+
 	//targetNumber(目的の数字)
 	int targetNumber = 60;
 
 	//長さ
-	float a[2] = { 0 };
-	float b[2] = { 0 };
-	float distance[2] = { 0 };
-
-	//実験用初期値
-	numberBox[0].pos = { blockPos[2][2].x,blockPos[2][2].y };
-	numberBox[1].pos = { blockPos[5][5].x,blockPos[5][5].y };
-	numberBox[2].pos = { blockPos[5][6].x,blockPos[5][6].y };
-	numberBox[3].pos = { blockPos[6][5].x,blockPos[6][5].y };
-
-	numberBox[0].number = 1;
-	numberBox[1].number = 4;
-	numberBox[2].number = 5;
-	numberBox[3].number = 2;
-
-	numberBox[0].isAlive = true;
-	numberBox[1].isAlive = true;
-	numberBox[2].isAlive = true;
-	numberBox[3].isAlive = true;
+	float a[3] = { 0 };
+	float b[3] = { 0 };
+	float distance[3] = { 0 };
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -128,6 +128,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			///// リセット /////
 			//計算記号
 			calculation = add;
+			//プレイヤーの生存
+			player.isAlive = true;
 			//ナンバーボックス
 			for (int i = 0; i < kNumberBoxNumber; i++) {
 				//ナンバーボックスの有無
@@ -163,6 +165,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				numberBox[0].number = 0;
 				numberBox[1].number = 0;
 				numberBox[2].number = 0;
+				//お邪魔ブロックの有無
+				enemyBox[0].isAlive = true;
+				//お邪魔ブロックのスポーン位置
+				enemyBox[0].pos = { blockPos[0][0].x,blockPos[0][0].y };
+				//お邪魔ブロックの保有数字
+				enemyBox[0].number = 0;
 				break;
 			case 1:
 				//マップのロード
@@ -187,6 +195,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				numberBox[0].number = 2;
 				numberBox[1].number = 4;
 				numberBox[2].number = 3;
+				//お邪魔ブロックの有無
+				enemyBox[0].isAlive = true;
+				//お邪魔ブロックのスポーン位置
+				enemyBox[0].pos = { blockPos[6][4].x,blockPos[6][4].y };
+				//お邪魔ブロックの保有数字
+				enemyBox[0].number = -1;
 				break;
 			case 2:
 				//マップのロード
@@ -713,6 +727,45 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			///// playerとenemyBoxの当たり判定 /////
+			for (int i = 0; i < kEnemyBoxNumber; i++) {
+				if (enemyBox[i].isAlive) {
+					//長さの計算
+					a[1] = player.pos.x - enemyBox[i].pos.x;
+					b[1] = player.pos.y - enemyBox[i].pos.y;
+					distance[1] = sqrtf(a[1] * a[1] + b[1] * b[1]);
+
+					//実際の当たり判定
+					if (distance[1] < player.radius.x + enemyBox[i].radius.x) {
+						player.isAlive = false;
+						initializationFlag = true;
+					}
+				}
+			}
+
+			///// numberBoxとenemyBoxの当たり判定 /////
+			for (int i = 0; i < kNumberBoxNumber; i++) {
+				for (int j = 0; j < kEnemyBoxNumber; j++) {
+					if (numberBox[i].isAlive && enemyBox[j].isAlive) {
+						//長さの計算
+						a[2] = numberBox[i].pos.x - enemyBox[j].pos.x;
+						b[2] = numberBox[i].pos.y - enemyBox[j].pos.y;
+						distance[2] = sqrtf(a[2] * a[2] + b[2] * b[2]);
+
+						//実際の当たり判定
+						if (distance[2] < numberBox[i].radius.x + enemyBox[j].radius.x) {
+							enemyBox[j].isAlive = false;
+							if (calculation == add) {
+								numberBox[i].number += enemyBox[j].number;
+							} else {
+								numberBox[i].number *= enemyBox[j].number;
+							}
+							enemyBox[j].number = 0;
+						}
+					}
+				}
+			}
+
 			//クリア条件の処理
 			for (int i = 0; i < kNumberBoxNumber; i++) {
 				if (targetNumber == numberBox[i].number) {
@@ -754,6 +807,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			//EnemyBoxの表示
+			for (int i = 0; i < kEnemyBoxNumber; i++) {
+				if (enemyBox[i].isAlive) {
+					Novice::DrawQuad(
+						int(enemyBox[i].pos.x - enemyBox[i].radius.x + screenBeside), int(enemyBox[i].pos.y - enemyBox[i].radius.y),
+						int(enemyBox[i].pos.x + enemyBox[i].radius.x + screenBeside), int(enemyBox[i].pos.y - enemyBox[i].radius.y),
+						int(enemyBox[i].pos.x - enemyBox[i].radius.x + screenBeside), int(enemyBox[i].pos.y + enemyBox[i].radius.y),
+						int(enemyBox[i].pos.x + enemyBox[i].radius.x + screenBeside), int(enemyBox[i].pos.y + enemyBox[i].radius.y),
+						100 * int(enemyBoxSize), 0, int(enemyBoxSize), int(enemyBoxSize), numberBoxs_image, WHITE
+					);
+				}
+			}
+
 			//NumberBoxの表示
 			for (int i = 0; i < kNumberBoxNumber; i++) {
 				if (numberBox[i].isAlive) {
@@ -768,8 +834,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			//playerの表示
-			Novice::DrawSprite(int(player.pos.x - player.radius.x + screenBeside), int(player.pos.y - player.radius.y), player_image, 1, 1, 0.0f, WHITE);
-
+			if (player.isAlive) {
+				Novice::DrawSprite(int(player.pos.x - player.radius.x + screenBeside), int(player.pos.y - player.radius.y), player_image, 1, 1, 0.0f, WHITE);
+			}
+			
 			///// ↑↑描画処理↑↑ /////
 			break;
 		case gameClear:

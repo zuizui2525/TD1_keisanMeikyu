@@ -51,6 +51,7 @@ struct Player {
 	Status status;
 	Grid now;
 	Grid next;
+	bool isAlive;
 };
 
 struct NumberBox {
