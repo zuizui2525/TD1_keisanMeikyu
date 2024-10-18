@@ -2,7 +2,12 @@
 
 enum scene {
 	title,
-	gameselect,
+	stageSelect,
 	game,
-	gameclear
+	gameClear
+};
+
+enum calculation {
+	add,
+	multiply
 };
